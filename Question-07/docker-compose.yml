@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  rabbitmq-exporter:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: rabbitmq-exporter
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_USER=guest
+      - RABBITMQ_PASSWORD=guest
+    ports:
+      - "5000:5000"
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    ports:
+      - "15672:15672" # RabbitMQ Management
+      - "5672:5672"   # RabbitMQ Messaging
